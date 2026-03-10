@@ -1,6 +1,5 @@
 import api from "../../services/api";
 
-
 export const ActionTypes = {
   CUSTOMER_ALL: "CUSTOMER_ALL",
   CUSTOMER_BY_ID: "CUSTOMER_BY_ID",

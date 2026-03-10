@@ -8,6 +8,9 @@ import {
 } from "../redux/actions/CustomerAction"
 import CustomerForm from "../components/CustomerForm"
 
+import Button from "@mui/material/Button"
+import Badge from "@mui/material/Badge"
+
 const Customers = () => {
   const dispatch = useDispatch()
   const { customers, isLoading } = useSelector((state) => state.customer)
@@ -15,12 +18,6 @@ const Customers = () => {
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [searchPhone, setSearchPhone] = useState("")
-
-  console.log(" customers:", customers)
-  console.log(" showForm:", showForm)
-  // console.log(" editingCustomer:", editingCustomer)
-  // console.log(" isSubmitting:", isSubmitting)
-  // console.log(" searchPhone:", searchPhone)
 
   useEffect(() => {
     dispatch(fetchAllCustomers())
@@ -86,12 +83,14 @@ const Customers = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">ข้อมูลสมาชิก</h1>
-          <button
+          <Button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold"
+            variant="contained"
+            size="large"
+            // className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold"
           >
             + เพิ่มสมาชิกใหม่
-          </button>
+          </Button>
         </div>
 
         <div className="mb-6">
@@ -155,19 +154,27 @@ const Customers = () => {
                     <span className="font-semibold">เบอร์โทร:</span>
                     {customer.phone}
                   </p>
-                  <div className="flex gap-2">
-                    <button
+                  <p className="text-gray-600 mb-4">
+                    <span className="font-semibold">Credits:</span>
+                    {customer.credits}
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <Button
                       onClick={() => handleEditCustomer(customer)}
-                      className="flex-1 bg-blue-200 text-blue-800 py-2 rounded hover:bg-blue-300 text-sm font-semibold"
+                      variant="outlined"
+                      size="medium"
+                      color="primary"
                     >
                       แก้ไข
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => handleDeleteCustomer(customer)}
-                      className="flex-1 bg-red-200 text-red-800 py-2 rounded hover:bg-red-300 text-sm font-semibold"
+                      variant="outlined"
+                      color="error"
+                      size="medium"
                     >
                       ลบ
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))
@@ -178,14 +185,6 @@ const Customers = () => {
                     ? "ไม่พบสมาชิกที่มีเบอร์โทรนี้"
                     : "ไม่มีข้อมูลสมาชิก"}
                 </p>
-                {!searchPhone && (
-                  <button
-                    onClick={() => setShowForm(true)}
-                    className="mt-4 text-blue-600 hover:text-blue-700 font-semibold"
-                  >
-                    สร้างสมาชิกแรก
-                  </button>
-                )}
               </div>
             )}
           </div>

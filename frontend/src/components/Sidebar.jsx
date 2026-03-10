@@ -17,29 +17,16 @@ const Sidebar = () => {
 
       <nav className="space-y-2">
         <Link
-          to="/home"
-          className={`block px-4 py-2 rounded-lg transition ${isActive("/home")}`}
-        >
-          🏠 หน้าแรก
-        </Link>
-
-        <Link
-          // to="/home"
-          className={`block px-4 py-2 rounded-lg `}
-        >
-          รายการจอดรถทั้งหมด
-        </Link>
-        <Link
-          to="/dashboard"
-          className={`block px-4 py-2 rounded-lg transition ${isActive("/dashboard")}`}
-        >
-          📊 แดชบอร์ด
-        </Link>
-        <Link
           to="/parking-zones"
           className={`block px-4 py-2 rounded-lg transition ${isActive("/parking-zones")}`}
         >
           🅿️ พื้นที่จอด
+        </Link>
+        <Link
+          to="/reservations"
+          className={`block px-4 py-2 rounded-lg transition ${isActive("/reservations")}`}
+        >
+          📝 จองที่จอดรถ
         </Link>
         <Link
           to="/pricing"
@@ -51,7 +38,7 @@ const Sidebar = () => {
           to="/customers"
           className={`block px-4 py-2 rounded-lg transition ${isActive("/customers")}`}
         >
-          👥 ลูกค้า
+          👥 ข้อมูลลูกค้า
         </Link>
       </nav>
     </aside>

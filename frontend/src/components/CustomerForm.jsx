@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import Button from "@mui/material/Button"
 
 const CustomerForm = ({
   onSubmit,
@@ -11,7 +12,8 @@ const CustomerForm = ({
     name: "",
     phone: "",
     id: "",
-    customerType: "REGULAR",
+    customerType: "",
+    credits: 0,
   })
 
   useEffect(() => {
@@ -20,7 +22,8 @@ const CustomerForm = ({
         name: initialData.name || "",
         phone: initialData.phone || "",
         id: initialData.id || "",
-        customerType: initialData.customerType || "REGULAR",
+        customerType: initialData.customerType || "",
+        credits: initialData.credits || 0,
       })
     }
   }, [initialData, isEditing])
@@ -37,14 +40,6 @@ const CustomerForm = ({
     e.preventDefault()
     if (formData.name && formData.phone) {
       onSubmit(formData)
-      if (!isEditing) {
-        setFormData({
-          name: "",
-          phone: "",
-          customerType: "REGULAR",
-          id: "",
-        })
-      }
     }
   }
 
@@ -54,8 +49,21 @@ const CustomerForm = ({
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           {isEditing ? "แก้ไขข้อมูลลูกค้า" : "เพิ่มสมาชิกใหม่"}
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Id
+            </label>
+            <input
+              type="number"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              placeholder="ระบุ id ของลูกค้า"
+              required
+            />
+          </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               ชื่อ *
@@ -85,7 +93,20 @@ const CustomerForm = ({
               required
             />
           </div>
-
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              credits
+            </label>
+            <input
+              type="number"
+              name="credits"
+              value={formData.credits}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              placeholder="ระบุ credits ของลูกค้า"
+              required
+            />
+          </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               ประเภทลูกค้า
@@ -96,44 +117,27 @@ const CustomerForm = ({
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
             >
-              <option value="REGULAR">ลูกค้าทั่วไป</option>
+              <option value="GENERAL">ลูกค้าทั่วไป</option>
               <option value="MEMBER">สมาชิกแบบเหมาจ่าย</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Id
-            </label>
-            <input
-              type="number"
-              name="id"
-              value={formData.id}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              placeholder="ระบุ id ของลูกค้า"
-              required
-            />
-          </div>
 
-          <div className="flex gap-4 pt-4">
-            <button
+          <div className="flex justify-end gap-4 pt-4">
+            <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
+              variant="outlined"
+              color="success"
             >
               {isLoading
                 ? "กำลังบันทึก..."
                 : isEditing
                   ? "บันทึกการเปลี่ยนแปลง"
                   : "สร้าง"}
-            </button>
-            <button
-              type="button"
-              onClick={onCancel}
-              className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg font-semibold hover:bg-gray-400"
-            >
+            </Button>
+            <Button onClick={onCancel} variant="outlined" color="error">
               ยกเลิก
-            </button>
+            </Button>
           </div>
         </form>
       </div>

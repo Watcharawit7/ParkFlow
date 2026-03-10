@@ -58,8 +58,6 @@ const method ={
         try {
             const currentParking = await Parking.findById(id).populate('customerId');
             const updatedParking = await Parking.findByIdAndUpdate(id, data, { returnDocument: "after" });
-            console.log('data',data);
-            console.log('currentParking',currentParking);
             
             if (data.status === "FINISHED") {
                 const checkOut = data.checkOut;
