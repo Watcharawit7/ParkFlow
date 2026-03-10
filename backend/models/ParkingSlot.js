@@ -17,7 +17,7 @@ const schema = new mongoose.Schema({
   },
   currentParkingId: {
     type: mongoose.Schema.Types.ObjectId,
-    default: null,
+    ref: "Parking",
   },
 });
 

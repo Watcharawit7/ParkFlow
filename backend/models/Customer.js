@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
   id: {
-    type: String,
+    type: Number,
     required: true,
     unique: true,
   },
@@ -13,6 +13,10 @@ const schema = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
+  },
+  credits:{
+    type: Number,
+    default: 0,
   },
   customerType: {
     type: String,

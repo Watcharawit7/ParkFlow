@@ -11,6 +11,10 @@ const schema = new mongoose.Schema({
     ref: "ParkingSlot",
     required: true,
   },
+  license_plate: {
+    type: String,
+    required: true,
+  },
   checkIn: {
     type: Date,
     default: Date.now,
@@ -23,6 +27,10 @@ const schema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  totalCredits: {
+    type: Number,
+    default: 0,
+  },
   totalDays: {
     type: Number,
     default: 0,
@@ -30,7 +38,7 @@ const schema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["PARKING", "FINISHED"],
-    default: "PARKING",
+    default: "null",
   },
 });
 
