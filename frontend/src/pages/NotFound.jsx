@@ -15,15 +15,12 @@ const NotFound = () => {
     >
       <Box textAlign="center">
         <ErrorOutlineIcon sx={{ fontSize: 80, color: "#1976d2" }} />
-
         <Typography variant="h1" fontWeight="bold">
           404
         </Typography>
-
         <Typography variant="h5" color="text.secondary" mb={3}>
           ไม่พบหน้าที่คุณกำลังค้นหา
         </Typography>
-
         <Button
           component={Link}
           to="/parking-zones"

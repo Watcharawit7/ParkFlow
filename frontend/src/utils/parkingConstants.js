@@ -15,7 +15,6 @@ export const PRICING_RATES = {
 
 export const calculateParkingFee = (hours, customerType = "REGULAR") => {
   const rates = PRICING_RATES[customerType]
-  
   if (hours <= 1) {
     return {
       amount: rates.firstHour,
@@ -23,7 +22,6 @@ export const calculateParkingFee = (hours, customerType = "REGULAR") => {
       breakdown: `ชั่วโมงที่ 1: ${rates.firstHour} บาท`,
     }
   }
-  
   const days = Math.ceil((hours - 1) / 24)
   const additionalFee = customerType === "MEMBER" 
     ? { amount: days, unit: "Credit" }

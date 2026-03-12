@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import { fetchAllCustomers } from "../redux/actions/CustomerAction"
 import { fetchAllParkingZones, fetchAllParkingSlots } from "../redux/actions"
 import {
@@ -8,11 +9,20 @@ import {
   updateParking,
 } from "../redux/actions/ParkingAction"
 
-import Button from "@mui/material/Button"
-import CircularProgress from "@mui/material/CircularProgress"
+import {
+  Button,
+  CircularProgress,
+  Box,
+  Typography,
+  TextField,
+  Card,
+  CardContent,
+  Grid,
+} from "@mui/material"
 
 const Reservations = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { customers } = useSelector((state) => state.customer)
   const { parkingZones } = useSelector((state) => state.parkingZone)
   const { parkingSlots } = useSelector((state) => state.parkingSlot)
@@ -27,6 +37,9 @@ const Reservations = () => {
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
   const [filterStatus, setFilterStatus] = useState("PARKING")
   const [checkOutDates, setCheckOutDates] = useState({})
+  const [filterStartDate, setFilterStartDate] = useState("")
+  const [filterEndDate, setFilterEndDate] = useState("")
+  const [filterCustomerName, setFilterCustomerName] = useState("")
 
   useEffect(() => {
     dispatch(fetchAllCustomers())
@@ -81,7 +94,6 @@ const Reservations = () => {
       await dispatch(createParking(reservationData))
       await dispatch(fetchAllParkings())
       await dispatch(fetchAllParkingSlots())
-
       setSelectedCustomer(null)
       setSelectedZone(null)
       setSelectedSlot(null)
@@ -100,18 +112,15 @@ const Reservations = () => {
       ? new Date(checkOutDates[parking._id])
       : new Date()
     if (!window.confirm("ยืนยันการสิ้นสุดการจอดของรายการนี้?")) return
-
     setIsSubmitting(true)
     try {
       const updateData = {
         status: "FINISHED",
         checkOut: checkOutDate,
       }
-
       await dispatch(updateParking(parking._id, updateData))
       dispatch(fetchAllParkings())
       dispatch(fetchAllParkingSlots())
-
       setCheckOutDates((prev) => {
         const newDates = { ...prev }
         delete newDates[parking._id]
@@ -131,8 +140,16 @@ const Reservations = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">รายการจอง</h1>
-
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800">รายการจอง</h1>
+            <Button
+              onClick={() => navigate("/reservation-summary")}
+              variant="outlined"
+              sx={{ px: 3, py: 1, borderRadius: 2 }}
+            >
+              📊 ดูสรุป
+            </Button>
+          </div>
           <div className="bg-white rounded-lg shadow p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">
               ข้อมูลการจอง
@@ -179,35 +196,42 @@ const Reservations = () => {
                 )}
               </div>
             </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 เลือกโซนจอดรถ
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {parkingZones?.map((zone) => {
-                  return (
-                    <div
-                      key={zone._id}
+              </Typography>
+              <Grid container spacing={2}>
+                {parkingZones?.map((zone) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={zone._id}>
+                    <Card
                       onClick={() => handleSelectZone(zone)}
-                      className={`border rounded-lg p-4 cursor-pointer transition ${
-                        selectedZone?._id === zone._id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300 hover:border-gray-400"
-                      }`}
+                      sx={{
+                        cursor: "pointer",
+                        border:
+                          selectedZone?._id === zone._id
+                            ? "2px solid #1976d2"
+                            : "1px solid #e0e0e0",
+                        backgroundColor:
+                          selectedZone?._id === zone._id ? "#f3f9ff" : "white",
+                        "&:hover": {
+                          borderColor: "#1976d2",
+                          boxShadow: 2,
+                        },
+                      }}
                     >
-                      <h3 className="font-semibold text-gray-800">
-                        Zone: {zone.zoneName}
-                      </h3>
-                      <p className="text-sm text-green-600">
-                        ว่าง: {availableCount}/{zone.totalSlots}
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
+                      <CardContent sx={{ p: 2 }}>
+                        <Typography variant="h6" fontWeight="bold">
+                          Zone: {zone.zoneName}
+                        </Typography>
+                        <Typography variant="body2" color="success.main">
+                          ว่าง: {availableCount}/{zone.totalSlots}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
             {selectedZone && (
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -238,20 +262,19 @@ const Reservations = () => {
                 )}
               </div>
             )}
-
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 ป้ายทะเบียนรถ *
-              </label>
-              <input
-                type="text"
+              </Typography>
+              <TextField
+                fullWidth
                 value={licensePlate}
                 onChange={(e) => setLicensePlate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="กรอกป้ายทะเบียน"
+                variant="outlined"
               />
-            </div>
-            <div className="flex justify-end">
+            </Box>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button
                 onClick={handleCreateReservation}
                 disabled={
@@ -270,9 +293,8 @@ const Reservations = () => {
               >
                 {isSubmitting ? "กำลังจอง..." : "จองช่องจอดรถ"}
               </Button>
-            </div>
+            </Box>
           </div>
-
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-800">รายการจอง</h2>
@@ -298,7 +320,6 @@ const Reservations = () => {
                 >
                   รายการปัจจุบัน
                 </Button>
-
                 <Button
                   onClick={() => setFilterStatus("FINISHED")}
                   variant={
@@ -341,14 +362,110 @@ const Reservations = () => {
                 </Button>
               </div>
             </div>
-            {parkings?.filter(
-              (p) => filterStatus === "ALL" || p.status === filterStatus,
-            ).length > 0 ? (
+
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                ตัวกรองขั้นสูง
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    วันที่เริ่มต้น
+                  </label>
+                  <input
+                    type="date"
+                    value={filterStartDate}
+                    onChange={(e) => setFilterStartDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    วันที่สิ้นสุด
+                  </label>
+                  <input
+                    type="date"
+                    value={filterEndDate}
+                    onChange={(e) => setFilterEndDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ชื่อลูกค้า
+                  </label>
+                  <input
+                    type="text"
+                    value={filterCustomerName}
+                    onChange={(e) => setFilterCustomerName(e.target.value)}
+                    placeholder="ค้นหาชื่อลูกค้า..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  />
+                </div>
+                <div className="mt-6 ml-2">
+                  <Button
+                    onClick={() => {
+                      setFilterStartDate("")
+                      setFilterEndDate("")
+                      setFilterCustomerName("")
+                    }}
+                    variant="outlined"
+                    sx={{ px: 3, py: 1, borderRadius: 2 }}
+                  >
+                    ล้างตัวกรอง
+                  </Button>
+                </div>
+              </div>
+            </div>
+            {parkings?.filter((p) => {
+              if (filterStatus !== "ALL" && p.status !== filterStatus)
+                return false
+              if (filterStartDate || filterEndDate) {
+                const checkInDate = new Date(p.checkIn)
+                if (filterStartDate && checkInDate < new Date(filterStartDate))
+                  return false
+                if (
+                  filterEndDate &&
+                  checkInDate > new Date(filterEndDate + "T23:59:59")
+                )
+                  return false
+              }
+              if (
+                filterCustomerName &&
+                !p.customerId?.name
+                  ?.toLowerCase()
+                  .includes(filterCustomerName.toLowerCase())
+              )
+                return false
+              return true
+            }).length > 0 ? (
               <div className="space-y-4">
                 {parkings
-                  .filter(
-                    (p) => filterStatus === "ALL" || p.status === filterStatus,
-                  )
+                  .filter((p) => {
+                    if (filterStatus !== "ALL" && p.status !== filterStatus)
+                      return false
+                    if (filterStartDate || filterEndDate) {
+                      const checkInDate = new Date(p.checkIn)
+                      if (
+                        filterStartDate &&
+                        checkInDate < new Date(filterStartDate)
+                      )
+                        return false
+                      if (
+                        filterEndDate &&
+                        checkInDate > new Date(filterEndDate + "T23:59:59")
+                      )
+                        return false
+                    }
+                    if (
+                      filterCustomerName &&
+                      !p.customerId?.name
+                        ?.toLowerCase()
+                        .includes(filterCustomerName.toLowerCase())
+                    )
+                      return false
+                    return true
+                  })
                   .map((parking) => {
                     return (
                       <div key={parking._id} className="border rounded-lg p-4">

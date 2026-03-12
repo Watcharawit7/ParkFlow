@@ -29,6 +29,12 @@ const Sidebar = () => {
           📝 จองที่จอดรถ
         </Link>
         <Link
+          to="/reservation-summary"
+          className={`block px-4 py-2 rounded-lg transition ${isActive("/reservation-summary")}`}
+        >
+          📊 สรุปรายการจอง
+        </Link>
+        <Link
           to="/pricing"
           className={`block px-4 py-2 rounded-lg transition ${isActive("/pricing")}`}
         >

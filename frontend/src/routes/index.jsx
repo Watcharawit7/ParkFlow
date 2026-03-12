@@ -9,6 +9,7 @@ import Customers from "../pages/Customers"
 import ParkingZones from "../pages/ParkingZones"
 import Pricing from "../pages/Pricing"
 import Reservations from "../pages/Reservations"
+import ReservationSummary from "../pages/ReservationSummary"
 import NotFound from "../pages/NotFound"
 
 const AppRoutes = () => {
@@ -45,6 +46,14 @@ const AppRoutes = () => {
           element={
             <MainLayout>
               <Reservations />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/reservation-summary"
+          element={
+            <MainLayout>
+              <ReservationSummary />
             </MainLayout>
           }
         />

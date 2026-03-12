@@ -1,6 +1,15 @@
 import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchAllParkingZones, fetchAllParkingSlots } from "../redux/actions"
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  LinearProgress,
+} from "@mui/material"
 
 const ParkingSlot = ({ zone }) => {
   const totalSpots = zone.totalSpots
@@ -14,57 +23,85 @@ const ParkingSlot = ({ zone }) => {
   const isAvailable = availableSpots > 0
 
   const status = isAvailable ? "ว่าง" : "เต็ม"
-  const statusColor = isAvailable ? "text-green-600" : "text-red-600"
+  const statusColor = isAvailable ? "success" : "error"
   const bgColor = isAvailable ? "bg-green-50" : "bg-red-50"
 
   return (
-    <div className={`${bgColor} border rounded-lg p-6`}>
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800">
-            Zone: {zone.name}
-          </h3>
-        </div>
-        <span
-          className={`px-3 py-1 rounded-full text-sm font-semibold ${statusColor}`}
+    <Card
+      sx={{
+        border: "1px solid",
+        borderColor: "divider",
+        bgcolor: bgColor,
+        borderRadius: 2,
+        width: 500,
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="flex-start"
         >
-          {status}
-        </span>
-      </div>
-      <div className="space-y-3">
-        <div>
-          <div className="flex justify-between mb-2">
-            <span className="text-sm font-semibold">{occupancyRate}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all"
-              style={{ width: `${occupancyRate}%` }}
-            ></div>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-xs text-gray-500 mb-1">ช่องว่าง</p>
-            <p className="text-2xl font-bold text-green-600">
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Zone: {zone.name}
+          </Typography>
+          <Chip
+            label={status}
+            size="small"
+            color={statusColor}
+            variant="outlined"
+            sx={{
+              fontWeight: 600,
+              width: 50,
+            }}
+          />
+        </Box>
+        <Box>
+          <Box display="flex" justifyContent="space-between">
+            <Typography variant="body2" fontWeight={600}>
+              {occupancyRate}%
+            </Typography>
+          </Box>
+
+          <LinearProgress
+            variant="determinate"
+            value={occupancyRate}
+            sx={{
+              height: 8,
+              borderRadius: 5,
+            }}
+          />
+        </Box>
+        <Grid container spacing={2}>
+          <Grid sx={4}>
+            <Typography variant="caption" color="text.secondary">
+              ช่องว่าง
+            </Typography>
+            <Typography variant="h5" fontWeight="bold" color="success.main">
               {zone.availableSpots}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 mb-1">จอง</p>
-            <p className="text-2xl font-bold text-orange-600">
+            </Typography>
+          </Grid>
+
+          <Grid sx={4}>
+            <Typography variant="caption" color="text.secondary">
+              จอง
+            </Typography>
+            <Typography variant="h5" fontWeight="bold" color="warning.main">
               {zone.occupiedSpots}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 mb-1">ทั้งหมด</p>
-            <p className="text-2xl font-bold text-gray-800">
+            </Typography>
+          </Grid>
+
+          <Grid sx={4}>
+            <Typography variant="caption" color="text.secondary">
+              ทั้งหมด
+            </Typography>
+            <Typography variant="h5" fontWeight="bold">
               {zone.totalSpots}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -93,63 +130,100 @@ const ParkingZones = () => {
   }
 
   const enrichedZones = zones.map(computeZoneStats)
-
   const totalSpots = enrichedZones.reduce((sum, z) => sum + z.totalSpots, 0)
-
   const totalOccupied = enrichedZones.reduce(
     (sum, z) => sum + z.occupiedSpots,
     0,
   )
 
   const totalAvailable = totalSpots - totalOccupied
-
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">พื้นที่จอดรถ</h1>
+    <Box sx={{ p: 4 }}>
+      <Typography variant="h4" fontWeight="bold">
+        พื้นที่จอดรถ
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid sx={12}>
+          <Card elevation={3} sx={{ width: 300 }}>
+            <CardContent>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                fontWeight="600"
+                gutterBottom
+              >
+                ช่องว่างทั้งหมด
+              </Typography>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-gray-500 text-sm font-semibold mb-2">
-            ช่องว่างทั้งหมด
-          </h3>
-          <p className="text-3xl font-bold text-green-600">{totalAvailable}</p>
-          <p className="text-xs text-gray-500 mt-2">
-            จากทั้งหมด {totalSpots} ช่อง
-          </p>
-        </div>
+              <Typography variant="h4" fontWeight="bold" color="success.main">
+                {totalAvailable}
+              </Typography>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-gray-500 text-sm font-semibold mb-2">
-            มีการจอง{" "}
-          </h3>
-          <p className="text-3xl font-bold text-orange-600">{totalOccupied}</p>
-          <p className="text-xs text-gray-500 mt-2">
-            {((totalOccupied / totalSpots) * 100).toFixed(0)}% เต็ม
-          </p>
-        </div>
+              <Typography variant="caption" color="text.secondary">
+                จากทั้งหมด {totalSpots} ช่อง
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-gray-500 text-sm font-semibold mb-2">
-            ความพร้อม
-          </h3>
-          <p className="text-3xl font-bold text-blue-600">
-            {((totalAvailable / totalSpots) * 100).toFixed(0)}%
-          </p>
-          <p className="text-xs text-gray-500 mt-2">พร้อมให้บริการ</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Grid sx={12}>
+          <Card elevation={3} sx={{ width: 300 }}>
+            <CardContent>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                fontWeight="600"
+                gutterBottom
+              >
+                มีการจอง
+              </Typography>
+              <Typography variant="h4" fontWeight="bold" color="warning.main">
+                {totalOccupied}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {((totalOccupied / totalSpots) * 100).toFixed(0)}% เต็ม
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid sx={12}>
+          <Card elevation={3} sx={{ width: 300 }}>
+            <CardContent>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                fontWeight="600"
+                gutterBottom
+              >
+                ความพร้อม
+              </Typography>
+              <Typography variant="h4" fontWeight="bold" color="info.main">
+                {((totalAvailable / totalSpots) * 100).toFixed(0)}%
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                พร้อมให้บริการ
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={3}>
         {enrichedZones.length > 0 ? (
           enrichedZones.map((zone) => (
-            <ParkingSlot key={zone._id || zone.id} zone={zone} />
+            <Grid sx={12} key={zone._id || zone.id} className="mt-6">
+              <ParkingSlot zone={zone} />
+            </Grid>
           ))
         ) : (
-          <p className="col-span-full text-center text-gray-500">
-            ไม่พบข้อมูลพื้นที่จอดรถ
-          </p>
+          <Grid sx={12}>
+            <Typography textAlign="center" color="text.secondary">
+              ไม่พบข้อมูลพื้นที่จอดรถ
+            </Typography>
+          </Grid>
         )}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   )
 }
 

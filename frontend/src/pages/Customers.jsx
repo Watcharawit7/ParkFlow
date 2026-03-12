@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
+
 import {
   fetchAllCustomers,
   createCustomer,
@@ -8,8 +9,15 @@ import {
 } from "../redux/actions/CustomerAction"
 import CustomerForm from "../components/CustomerForm"
 
-import Button from "@mui/material/Button"
-import Badge from "@mui/material/Badge"
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Chip,
+  Button,
+  Pagination,
+} from "@mui/material"
 
 const Customers = () => {
   const dispatch = useDispatch()
@@ -18,6 +26,8 @@ const Customers = () => {
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [searchPhone, setSearchPhone] = useState("")
+
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     dispatch(fetchAllCustomers())
@@ -78,6 +88,16 @@ const Customers = () => {
       customer.phone?.toLowerCase().includes(searchPhone.toLowerCase()),
     ) || []
 
+  const customersPerPage = 6
+
+  const indexOfLast = page * customersPerPage
+  const indexOfFirst = indexOfLast - customersPerPage
+  const currentCustomers = filteredCustomers.slice(indexOfFirst, indexOfLast)
+
+  const handleChangePage = (event, value) => {
+    setPage(value)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
@@ -87,12 +107,10 @@ const Customers = () => {
             onClick={() => setShowForm(true)}
             variant="contained"
             size="large"
-            // className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold"
           >
             + เพิ่มสมาชิกใหม่
           </Button>
         </div>
-
         <div className="mb-6">
           <div className="max-w-md">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -102,12 +120,11 @@ const Customers = () => {
               type="text"
               value={searchPhone}
               onChange={(e) => setSearchPhone(e.target.value)}
-              placeholder="พิมพ์เบอร์โทรศัพท์..."
+              placeholder="พิมพ์เบอร์โทรศัพท์"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
             />
           </div>
         </div>
-
         {showForm && (
           <CustomerForm
             onSubmit={
@@ -119,50 +136,49 @@ const Customers = () => {
             isEditing={!!editingCustomer}
           />
         )}
-
         {isLoading ? (
           <div className="text-center py-8">
             <p className="text-gray-500">กำลังโหลดข้อมูล...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCustomers.length > 0 ? (
-              filteredCustomers.map((customer) => (
-                <div
-                  key={customer._id}
-                  className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+            {currentCustomers.length > 0 ? (
+              currentCustomers.map((customer) => (
+                <Card
+                  key={customer?._id}
+                  className="hover:shadow-lg transition"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      {customer.id}
-                    </h2>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        customer.customerType === "MEMBER"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {customer.customerType === "MEMBER" ? "สมาชิก" : "ทั่วไป"}
-                    </span>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    <span className="font-semibold">ชื่อ:</span>
-                    {customer.name}
-                  </p>
-                  <p className="text-gray-600 mb-4">
-                    <span className="font-semibold">เบอร์โทร:</span>
-                    {customer.phone}
-                  </p>
-                  <p className="text-gray-600 mb-4">
-                    <span className="font-semibold">Credits:</span>
-                    {customer.credits}
-                  </p>
-                  <div className="flex justify-center gap-4">
+                  <CardContent>
+                    <div className="flex justify-between items-center mb-3">
+                      <Typography variant="h6">{customer?.id}</Typography>
+                      <Chip
+                        label={
+                          customer?.customerType === "MEMBER"
+                            ? "สมาชิก"
+                            : "ทั่วไป"
+                        }
+                        color={
+                          customer?.customerType === "MEMBER"
+                            ? "secondary"
+                            : "primary"
+                        }
+                        size="small"
+                      />
+                    </div>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>ชื่อ:</strong> {customer?.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>เบอร์โทร:</strong> {customer?.phone}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Credits:</strong> {customer?.credits}
+                    </Typography>
+                  </CardContent>
+                  <CardActions className="flex justify-center gap-3 pb-4">
                     <Button
                       onClick={() => handleEditCustomer(customer)}
                       variant="outlined"
-                      size="medium"
                       color="primary"
                     >
                       แก้ไข
@@ -171,12 +187,11 @@ const Customers = () => {
                       onClick={() => handleDeleteCustomer(customer)}
                       variant="outlined"
                       color="error"
-                      size="medium"
                     >
                       ลบ
                     </Button>
-                  </div>
-                </div>
+                  </CardActions>
+                </Card>
               ))
             ) : (
               <div className="col-span-full text-center py-12">
@@ -189,6 +204,18 @@ const Customers = () => {
             )}
           </div>
         )}
+        <div className="flex justify-center mt-8">
+          <Pagination
+            count={Math.ceil(filteredCustomers.length / customersPerPage)}
+            page={page}
+            onChange={handleChangePage}
+            size="large"
+            variant="outlined"
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </div>
       </div>
     </div>
   )

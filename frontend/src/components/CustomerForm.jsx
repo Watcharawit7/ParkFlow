@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import Button from "@mui/material/Button"
+import { Button, Select, MenuItem, Input } from "@mui/material"
 
 const CustomerForm = ({
   onSubmit,
@@ -16,17 +16,17 @@ const CustomerForm = ({
     credits: 0,
   })
 
-  useEffect(() => {
-    if (initialData && isEditing) {
-      setFormData({
-        name: initialData.name || "",
-        phone: initialData.phone || "",
-        id: initialData.id || "",
-        customerType: initialData.customerType || "",
-        credits: initialData.credits || 0,
-      })
-    }
-  }, [initialData, isEditing])
+  // useEffect(() => {
+  //   if (initialData && isEditing) {
+  //     setFormData({
+  //       name: initialData.name || "",
+  //       phone: initialData.phone || "",
+  //       id: initialData.id || "",
+  //       customerType: initialData.customerType || "",
+  //       credits: initialData.credits || 0,
+  //     })
+  //   }
+  // }, [initialData, isEditing])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -54,7 +54,7 @@ const CustomerForm = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Id
             </label>
-            <input
+            <Input
               type="number"
               name="id"
               value={formData.id}
@@ -68,7 +68,7 @@ const CustomerForm = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               ชื่อ *
             </label>
-            <input
+            <Input
               type="text"
               name="name"
               value={formData.name}
@@ -78,12 +78,11 @@ const CustomerForm = ({
               required
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               เบอร์โทร *
             </label>
-            <input
+            <Input
               type="tel"
               name="phone"
               value={formData.phone}
@@ -97,7 +96,7 @@ const CustomerForm = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               credits
             </label>
-            <input
+            <Input
               type="number"
               name="credits"
               value={formData.credits}
@@ -111,17 +110,18 @@ const CustomerForm = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               ประเภทลูกค้า
             </label>
-            <select
+            <Select
               name="customerType"
+              displayEmpty
               value={formData.customerType}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              fullWidth
             >
-              <option value="GENERAL">ลูกค้าทั่วไป</option>
-              <option value="MEMBER">สมาชิกแบบเหมาจ่าย</option>
-            </select>
+              <MenuItem value="">เลือกประเภทสมาชิก</MenuItem>
+              <MenuItem value="GENERAL">ลูกค้าทั่วไป</MenuItem>
+              <MenuItem value="MEMBER">สมาชิกแบบเหมาจ่าย</MenuItem>
+            </Select>
           </div>
-
           <div className="flex justify-end gap-4 pt-4">
             <Button
               type="submit"
